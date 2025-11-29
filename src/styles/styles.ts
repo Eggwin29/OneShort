@@ -267,5 +267,21 @@ export const styles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: 50,
   },
+
+  // En src/styles/styles.ts, agrega al final:
+loadingContainer: {
+  backgroundColor: 'rgba(0, 0, 0, 0.8)',
+  padding: 20,
+  borderRadius: 10,
+  alignItems: 'center',
+},
+loadingText: {
+  color: '#FFFFFF',
+  marginTop: 10,
+  fontSize: 16,
+},
+disabledButton: {
+  opacity: 0.6,
+},
 });
 

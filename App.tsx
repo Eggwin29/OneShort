@@ -1,28 +1,48 @@
-// App.tsx (Modificado)
-
-import React, { useState, useCallback } from 'react';
+// App.tsx (Actualizado)
+import React, { useState, useCallback, useEffect } from 'react';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { styles } from './src/styles/styles';
-import FeedScreen from './src/screens/FeedScreen'; // Tu pantalla de feed existente
-import AuthScreen from './src/screens/AuthScreen'; // Tu nueva pantalla de auth
+import FeedScreen from './src/screens/FeedScreen';
+import AuthScreen from './src/screens/AuthScreen';
+import { auth, onAuthStateChanged } from './src/services/firebaseService';
+import AuthLoadingOverlay from './src/components/AuthLoadingOverlay';
 
 export default function App() {
-  // Simulación del estado de autenticación. En una app real, usarías un Context/Redux.
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Inicia en false
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   const handleAuthSuccess = useCallback(() => {
     setIsAuthenticated(true);
   }, []);
 
+  useEffect(() => {
+    // Escuchar cambios en el estado de autenticación
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user);
+    });
+
+    // Cleanup subscription
+    return unsubscribe;
+  }, []);
+
+  // Mostrar loading mientras verifica el estado de autenticación
+  if (isAuthenticated === null) {
+    return (
+      <SafeAreaProvider>
+        <SafeAreaView style={styles.safeArea}>
+          <AuthLoadingOverlay visible={true} message="Verificando sesión..." />
+          <StatusBar style="light" />
+        </SafeAreaView>
+      </SafeAreaProvider>
+    );
+  }
+
   return (
     <SafeAreaProvider>
       <SafeAreaView style={styles.safeArea}>
         {isAuthenticated ? (
-          // 1. Si está autenticado, muestra el Feed
           <FeedScreen />
         ) : (
-          // 2. Si NO está autenticado, muestra el AuthScreen
           <AuthScreen onAuthSuccess={handleAuthSuccess} />
         )}
         <StatusBar style="light" />

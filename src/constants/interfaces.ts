@@ -1,5 +1,4 @@
 // src/constants/interfaces.ts
-
 import { Ionicons, Feather } from '@expo/vector-icons';
 
 /**
@@ -30,10 +29,20 @@ export interface VideoItemProps {
     isActive: boolean;
 }
 
-// --- NUEVAS INTERFACES PARA AUTENTICACIÓN ---
+// --- INTERFACES PARA AUTENTICACIÓN ---
 
 export interface AuthFormProps {
   onSuccess: () => void;
 }
 
 export type AuthMode = 'Login' | 'Register';
+
+// --- INTERFACES PARA USUARIOS EN DATABASE ---
+
+export interface UserData {
+  username: string;
+  email: string;
+  password: string; // Contraseña cifrada
+  createdAt: string;
+  updatedAt: string;
+}
