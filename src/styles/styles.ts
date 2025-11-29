@@ -5,6 +5,7 @@ import { StyleSheet, Dimensions } from 'react-native';
 const { height, width } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
+  // --- Global Styles ---
   safeArea: {
     flex: 1,
     backgroundColor: '#000',
@@ -13,7 +14,7 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
   },
-  // --- VideoItem Styles ---
+  // --- VideoItem Styles (código existente...) ---
   itemContainer: {
     width,
     height,
@@ -155,4 +156,116 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 100, 
   },
+  // --- ESTILOS DE AUTENTICACIÓN MODERNIZADOS ---
+
+  // Nuevo contenedor que simula el gradiente sutil y centra mejor el contenido
+  authContainer: {
+    flex: 1,
+    backgroundColor: '#101010',
+    padding: 30, // Más padding para un look más limpio
+    justifyContent: 'center',
+  },
+  // Estilos de Título ya creados, pero mejor agrupados:
+  authTitleWrapper: {
+    marginBottom: 40,
+  },
+  TitleText: {
+    color: '#ffffff',
+    fontSize: 48,
+    fontWeight: 'bold',
+    textShadowColor: '#ffffff',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8, // Reducido un poco para frescura
+    textAlign: 'center',
+  },
+  TitleTextLight: {
+    color: '#ffc95e',
+    fontSize: 48,
+    fontWeight: 'bold',
+    textShadowColor: '#ffc95e',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 12, // Reducido un poco
+    textAlign: 'center',
+  },
+  
+  // Selector de Modo (Pestañas)
+  authSelector: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', // Separamos los botones
+    marginBottom: 30,
+    // Eliminamos el fondo para que los botones destaquen sobre el fondo oscuro
+  },
+  selectorButton: {
+    flex: 1,
+    paddingVertical: 12, // Más alto
+    borderRadius: 0, // Eliminamos bordes redondeados, solo usamos borde inferior
+    alignItems: 'center',
+    borderBottomWidth: 3, // Borde inferior para simular una pestaña
+    borderColor: 'transparent', // Por defecto transparente
+    marginHorizontal: 10,
+  },
+  selectorButtonActive: {
+    borderColor: '#ffc95e', // La luz de la bombilla para el activo
+  },
+  selectorText: {
+    color: 'rgba(255, 255, 255, 0.5)', 
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  selectorTextActive: {
+    color: 'white',
+    fontWeight: '700',
+  },
+  formWrapper: {
+    overflow: 'hidden',
+    height: 320, // Aumentada un poco la altura para más espacio
+  },
+  formContainer: {
+    width: width - 60, // Ancho de la vista menos el padding de 30 a cada lado
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
+
+  fin: {
+    backgroundColor: '#ffffff2d',
+    padding: 10,
+    borderRadius: 10
+},
+  // Estilo de Input Modernizado
+  input: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)', // Fondo muy sutil
+    color: 'white',
+    padding: 15,
+    borderRadius: 10, // Bordes más suaves
+    fontSize: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)', // Borde muy tenue
+  },
+  // Estilo de Botón Modernizado (Primario)
+  authButton: {
+    backgroundColor: '#ffc95e', // Usamos el color de la bombilla (amarillo/oro)
+    padding: 16,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20, // Más espacio arriba
+    shadowColor: '#ffc95e', // Sombra de luz para el toque OneShot
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  authButtonText: {
+    color: '#101010',
+    fontSize: 18,
+    fontWeight: '900', // Más negrita
+  },
+  logoImage: {
+    width: 80,
+    height: 80,
+    alignSelf: 'center',
+    marginBottom: 50,
+  },
 });
+

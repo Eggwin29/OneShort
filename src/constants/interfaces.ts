@@ -29,3 +29,11 @@ export interface VideoItemProps {
     content: ContentData;
     isActive: boolean;
 }
+
+// --- NUEVAS INTERFACES PARA AUTENTICACIÓN ---
+
+export interface AuthFormProps {
+  onSuccess: () => void;
+}
+
+export type AuthMode = 'Login' | 'Register';
