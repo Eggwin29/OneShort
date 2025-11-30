@@ -1,5 +1,4 @@
 // src/screens/FeedScreen.tsx
-
 import React, { useState, useRef, useCallback, useMemo } from 'react';
 import {
   View,
@@ -18,16 +17,24 @@ import LoadingOverlay from '../components/LoadingOverlay';
 
 const { height } = Dimensions.get('window');
 
+interface FeedScreenProps {
+  onNavigateToProfile: () => void;
+  onNavigateToFeed: () => void;
+}
+
 /**
  * Componente principal de la pantalla de Feed (similar a TikTok).
  * Contiene la FlatList, la lógica de paginación y la gestión de videos activos.
  */
-const FeedScreen: React.FC = () => {
+const FeedScreen: React.FC<FeedScreenProps> = ({ 
+  onNavigateToProfile, 
+  onNavigateToFeed 
+}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const flatListRef = useRef<FlatList<number>>(null); // Referencia a la lista
-  const [data, setData] = useState<number[]>(VIDEOLIST); // Lista de URIs de video
-  const [loading, setLoading] = useState(false); // Estado de carga para la recarga
-  const rotateAnim = useRef(new Animated.Value(0)).current; // Animación de rotación para la carga
+  const flatListRef = useRef<FlatList<number>>(null);
+  const [data, setData] = useState<number[]>(VIDEOLIST);
+  const [loading, setLoading] = useState(false);
+  const rotateAnim = useRef(new Animated.Value(0)).current;
 
   // --- Lógica de Animación y Carga ---
 
@@ -59,27 +66,20 @@ const FeedScreen: React.FC = () => {
 
   // --- Lógica de Scroll y FlatList ---
 
-  // Manejador para detectar el fin del scroll y cargar más videos
   const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset, layoutMeasurement, contentSize } = event.nativeEvent;
     const currentOffset = contentOffset.y;
     const maxOffset = contentSize.height - layoutMeasurement.height;
 
-    // Si estás cerca del final, añade más videos
     if (currentOffset >= maxOffset - 10 && !loading) {
-      // Nota: El código original permitía una carga infinita aquí.
-      // Para simular una carga, podríamos añadir un `setLoading(true)` aquí
-      // y mover `setData` dentro de un `setTimeout` como en `handleLogoPress`.
       setData(prevData => [...prevData, ...VIDEOLIST]);
     }
   }, [loading]);
 
-  // Manejador para actualizar el índice activo cuando el scroll se detiene
   const handleMomentumScrollEnd = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset, layoutMeasurement } = event.nativeEvent;
     const index = Math.floor(contentOffset.y / layoutMeasurement.height);
 
-    // Lógica para volver al principio si se llega al final
     if (index >= data.length - 1) {
       setTimeout(() => {
         flatListRef.current?.scrollToIndex({ index: 0, animated: false });
@@ -90,7 +90,6 @@ const FeedScreen: React.FC = () => {
     }
   }, [data.length]);
 
-  // Manejador del logo: simula la recarga al volver al inicio
   const handleLogoPress = useCallback(() => {
     setLoading(true);
     
@@ -98,17 +97,15 @@ const FeedScreen: React.FC = () => {
       flatListRef.current?.scrollToIndex({ index: 0, animated: false });
       setCurrentIndex(0);
       setLoading(false);
-    }, 400); // 400ms de "carga"
+    }, 400);
   }, []);
 
-  // Para optimizar el rendimiento de la lista
   const getItemLayout = useCallback((_: any, index: number) => ({
     length: height,
     offset: height * index,
     index,
   }), []);
 
-  // Función para renderizar un item de video
   const renderItem = useCallback(({ item, index }: { item: number, index: number }) => {
     const contentIndex = index % OVERLAY_DATA.length;
     const content = OVERLAY_DATA[contentIndex];
@@ -145,7 +142,12 @@ const FeedScreen: React.FC = () => {
       <FlatList {...flatListProps} />
 
       {/* Encabezado fijo sobre la FlatList */}
-      <FeedHeader onLogoPress={handleLogoPress} />
+      <FeedHeader 
+        onLogoPress={handleLogoPress}
+        onNavigateToProfile={onNavigateToProfile}
+        onNavigateToFeed={onNavigateToFeed}
+        currentScreen="feed"
+      />
 
       {/* Indicador de Carga (Overlay Animado) */}
       {loading && <LoadingOverlay rotateData={rotateData} />}

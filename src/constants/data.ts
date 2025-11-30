@@ -9,6 +9,16 @@ export const VIDEOLIST: number[] = [
   require('../../assets/videos/videotest1.mp4'),
   require('../../assets/videos/videotest2.mp4'),
   require('../../assets/videos/videotest3.mp4'),
+  require('../../assets/videos/videotest4.mp4'),
+  require('../../assets/videos/videotest5.mp4'),
+  require('../../assets/videos/videotest6.mp4'),
+  require('../../assets/videos/videotest7.mp4'),
+  require('../../assets/videos/videotest8.mp4'),
+  require('../../assets/videos/videotest9.mp4'),
+  require('../../assets/videos/videotest10.mp4'),
+  require('../../assets/videos/videotest11.mp4'),
+  require('../../assets/videos/videotest12.mp4'),
+  require('../../assets/videos/videotest13.mp4')
 ];
 
 /**

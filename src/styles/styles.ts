@@ -283,5 +283,186 @@ loadingText: {
 disabledButton: {
   opacity: 0.6,
 },
+
+
+// Agrega esto al final de src/styles/styles.ts
+
+  // --- PROFILE SCREEN STYLES ---
+  profileContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  profileHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    paddingTop: 10,
+    paddingBottom: 15,
+    backgroundColor: '#000',
+  },
+  profileHeaderTitle: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  profileSettingsButton: {
+    padding: 5,
+  },
+  profileScrollView: {
+    flex: 1,
+  },
+  profileInfoSection: {
+    paddingHorizontal: 15,
+    paddingBottom: 20,
+  },
+  profileTopSection: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 15,
+  },
+  profileImageContainer: {
+    position: 'relative',
+    marginRight: 20,
+  },
+  profileImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: '#ffc95e',
+  },
+  profileEditButton: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    backgroundColor: '#ffc95e',
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#000',
+  },
+  profileStats: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 10,
+  },
+  profileStat: {
+    alignItems: 'center',
+  },
+  profileStatNumber: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  profileStatLabel: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 12,
+  },
+  profileBioSection: {
+    marginBottom: 15,
+  },
+  profileUsername: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  profileBio: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 14,
+    lineHeight: 18,
+  },
+  profileActions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  profileEditProfileButton: {
+    flex: 1,
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  profileEditProfileText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  profileShareButton: {
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    padding: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+  },
+  profileTabs: {
+    flexDirection: 'row',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.1)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.1)',
+  },
+  profileTab: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    gap: 8,
+  },
+  profileTabActive: {
+    borderBottomWidth: 2,
+    borderBottomColor: '#ffc95e',
+  },
+  profileTabText: {
+    color: 'rgba(255,255,255,0.5)',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  profileTabTextActive: {
+    color: '#ffc95e',
+  },
+  profileVideosGrid: {
+    paddingBottom: 20,
+  },
+  profileVideoItem: {
+    width: (width - 4) / 3, // 3 columnas con separación
+    aspectRatio: 3/4,
+    margin: 0.5,
+    position: 'relative',
+  },
+  profileVideoThumbnail: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+  },
+  profileVideoOverlay: {
+    position: 'absolute',
+    bottom: 5,
+    left: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  profileVideoLikes: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  // En la sección de PROFILE SCREEN STYLES, agrega:
+profileEmail: {
+  color: 'rgba(255,255,255,0.6)',
+  fontSize: 12,
+  marginBottom: 8,
+},
 });
 
