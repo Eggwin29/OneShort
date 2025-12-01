@@ -10,6 +10,7 @@ import {
 } from 'firebase/auth';
 import { getDatabase, ref, set, get, update } from 'firebase/database';
 import * as Crypto from 'expo-crypto';
+import { remove } from 'firebase/database';
 
 // Tu configuración de Firebase
 const firebaseConfig = {
@@ -236,3 +237,98 @@ export const getCurrentUser = () => {
  * Escucha cambios en el estado de autenticación
  */
 export { onAuthStateChanged };
+
+
+// AGREGAR ESTAS FUNCIONES AL FINAL DE TU firebaseService.ts ACTUAL
+// (después de la última función existente)
+
+// ==================== NUEVAS FUNCIONES PARA LIKES (AGREGAR AL FINAL) ====================
+
+/**
+ * Referencias para likes
+ */
+export const getUserLikesRef = (userId: string) => ref(database, `userLikes/${userId}`);
+export const getVideoLikesRef = (videoId: string) => ref(database, `videoLikes/${videoId}`);
+
+/**
+ * Da o quita like a un video
+ */
+export const toggleLike = async (userId: string, videoId: string): Promise<boolean> => {
+  try {
+    const userLikeRef = ref(database, `userLikes/${userId}/${videoId}`);
+    const videoUserLikeRef = ref(database, `videoLikes/${videoId}/${userId}`);
+    
+    // Verificar si ya existe el like
+    const snapshot = await get(userLikeRef);
+    
+    if (snapshot.exists()) {
+      // Quitar like
+      await remove(userLikeRef);
+      await remove(videoUserLikeRef);
+      return false;
+    } else {
+      // Dar like
+      await set(userLikeRef, {
+        timestamp: Date.now()
+      });
+      await set(videoUserLikeRef, {
+        timestamp: Date.now()
+      });
+      return true;
+    }
+  } catch (error) {
+    console.error('Error toggling like:', error);
+    throw error;
+  }
+};
+
+/**
+ * Obtiene todos los videos que un usuario ha dado like
+ */
+export const getUserLikedVideos = async (userId: string): Promise<string[]> => {
+  try {
+    const snapshot = await get(getUserLikesRef(userId));
+    if (snapshot.exists()) {
+      const likedVideos = snapshot.val();
+      return Object.keys(likedVideos);
+    }
+    return [];
+  } catch (error) {
+    console.error('Error getting user liked videos:', error);
+    return [];
+  }
+};
+
+/**
+ * Verifica si un usuario ha dado like a un video específico
+ */
+export const checkIfUserLikedVideo = async (userId: string, videoId: string): Promise<boolean> => {
+  try {
+    const likeRef = ref(database, `userLikes/${userId}/${videoId}`);
+    const snapshot = await get(likeRef);
+    return snapshot.exists();
+  } catch (error) {
+    console.error('Error checking like:', error);
+    return false;
+  }
+};
+
+/**
+ * Obtiene el número de likes de un video
+ */
+export const getVideoLikeCount = async (videoId: string): Promise<number> => {
+  try {
+    const snapshot = await get(getVideoLikesRef(videoId));
+    if (snapshot.exists()) {
+      const likes = snapshot.val();
+      return Object.keys(likes).length;
+    }
+    return 0;
+  } catch (error) {
+    console.error('Error getting video like count:', error);
+    return 0;
+  }
+};
+
+// Necesitas agregar estas importaciones al inicio del archivo si no están:
+// import { remove } from 'firebase/database';

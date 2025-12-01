@@ -518,7 +518,44 @@ modalCloseText: {
   fontSize: 16,
   fontWeight: 'bold',
 },
+// Agrega al final del archivo src/styles/styles.ts
 
+// --- Nuevos estilos para el sistema de likes ---
+emptyStateContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: 50,
+},
+emptyStateText: {
+  color: 'rgba(255,255,255,0.5)',
+  textAlign: 'center',
+  marginTop: 10,
+  fontSize: 16,
+},
+loadingContainers: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: 50,
+},
+likeCountBadge: {
+  position: 'absolute',
+  top: -5,
+  right: -5,
+  backgroundColor: '#FF3040',
+  borderRadius: 10,
+  minWidth: 20,
+  height: 20,
+  justifyContent: 'center',
+  alignItems: 'center',
+  paddingHorizontal: 5,
+},
+likeCountText: {
+  color: 'white',
+  fontSize: 10,
+  fontWeight: 'bold',
+},
 
 });
 

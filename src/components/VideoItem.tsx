@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  Alert,
 } from 'react-native';
 import { Video, ResizeMode } from 'expo-av';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -13,15 +14,43 @@ import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { styles } from '../styles/styles';
 import { VideoItemProps } from '../constants/interfaces';
 import InteractionButton from './InteractionButton';
+import { toggleLikeForCurrentUser } from '../services/userLikesService';
 
 const VideoItem: React.FC<VideoItemProps> = React.memo(({ uri, content, isActive }) => {
   const videoRef = useRef<Video>(null);
   const [paused, setPaused] = useState(false);
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(parseInt(content.likes.replace('K', '000').replace('M', '000000')) || 0);
 
   /** Tocar para pausar/reanudar */
   const handleVideoPress = useCallback(() => {
     setPaused(prev => !prev);
   }, []);
+
+  const handleLikePress = useCallback(async () => {
+    if (!content.id) {
+      console.error('Video ID no definido');
+      return;
+    }
+
+    try {
+      const newLikeStatus = await toggleLikeForCurrentUser(content.id);
+      setLiked(newLikeStatus);
+      // Actualizar el contador visualmente
+      if (newLikeStatus) {
+        setLikeCount(prev => prev + 1);
+      } else {
+        setLikeCount(prev => Math.max(0, prev - 1));
+      }
+    } catch (error: any) {
+      console.error('Error al dar like:', error);
+      if (error.message === 'Usuario no autenticado') {
+        Alert.alert('Inicia sesión', 'Debes iniciar sesión para dar like a los videos');
+      } else {
+        Alert.alert('Error', 'No se pudo completar la acción');
+      }
+    }
+  }, [content.id]);
 
   /**
    * Maneja la reproducción cuando:
@@ -82,9 +111,24 @@ const VideoItem: React.FC<VideoItemProps> = React.memo(({ uri, content, isActive
 
       {/* Botones y avatar (lado derecho) */}
       <View style={styles.interactionContainer}>
-        <InteractionButton iconName="heart" count={content.likes} iconType="Ionicons" />
-        <InteractionButton iconName="message-square" count={content.comments} iconType="Feather" />
-        <InteractionButton iconName="share" count="Compartir" iconType="Feather" />
+        <InteractionButton 
+          iconName="heart" 
+          count={formatLikeCount(likeCount)} 
+          iconType="Ionicons" 
+          onPress={handleLikePress}
+          isActive={liked}
+          videoId={content.id}
+        />
+        <InteractionButton 
+          iconName="message-square" 
+          count={content.comments} 
+          iconType="Feather" 
+        />
+        <InteractionButton 
+          iconName="share" 
+          count="Compartir" 
+          iconType="Feather" 
+        />
 
         <Image
           source={require('../../assets/images/logo.png')}
@@ -105,5 +149,15 @@ const VideoItem: React.FC<VideoItemProps> = React.memo(({ uri, content, isActive
     </TouchableOpacity>
   );
 });
+
+// Función auxiliar para formatear el conteo de likes
+const formatLikeCount = (count: number): string => {
+  if (count >= 1000000) {
+    return (count / 1000000).toFixed(1) + 'M';
+  } else if (count >= 1000) {
+    return (count / 1000).toFixed(1) + 'K';
+  }
+  return count.toString();
+};
 
 export default VideoItem;

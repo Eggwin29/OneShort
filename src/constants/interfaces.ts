@@ -7,8 +7,9 @@ import { Ionicons, Feather } from '@expo/vector-icons';
 export interface ContentData {
   username: string;
   description: string;
-  likes: string;
+  likes: string;  // Mantener como string
   comments: string;
+  id?: string; // Nuevo: ID único para el video (opcional para compatibilidad)
 }
 
 /**
@@ -16,8 +17,11 @@ export interface ContentData {
  */
 export interface InteractionButtonProps {
   iconName: keyof typeof Ionicons.glyphMap | keyof typeof Feather.glyphMap;
-  count: string;
+  count: string;  // Mantener como string
   iconType?: 'Ionicons' | 'Feather';
+  onPress?: () => void; // Nueva prop para manejar el clic
+  isActive?: boolean; // Nueva prop para estado activo/inactivo
+  videoId?: string; // Nueva prop para identificar el video
 }
 
 /**
@@ -45,4 +49,12 @@ export interface UserData {
   password: string; // Contraseña cifrada
   createdAt: string;
   updatedAt: string;
+  likedVideos?: string[]; // Nuevo: array de IDs de videos gustados
+}
+
+// --- NUEVAS INTERFACES PARA LIKES ---
+export interface UserLike {
+  userId: string;
+  videoId: string;
+  timestamp: number;
 }
