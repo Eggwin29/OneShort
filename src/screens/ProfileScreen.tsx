@@ -12,18 +12,20 @@ import {
 import { Ionicons, Feather, MaterialIcons } from '@expo/vector-icons';
 import { styles } from '../styles/styles';
 import { getCurrentUser } from '../services/firebaseService';
-
+import {imageList} from '../constants/data'
 const { width } = Dimensions.get('window');
 
 interface ProfileScreenProps {
   onBackToFeed: () => void;
 }
-
+const imagenDePerfil = imageList[0].path;
 /**
  * Pantalla de perfil del usuario estilo TikTok
  * Muestra los datos reales del usuario logeado
  */
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
+
+  
   const [activeTab, setActiveTab] = useState<'videos' | 'likes'>('videos');
   const [userData, setUserData] = useState<{
     username: string;
@@ -125,7 +127,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
           <View style={styles.profileTopSection}>
             <View style={styles.profileImageContainer}>
               <Image 
-                source={{ uri: 'https://picsum.photos/seed/profile/150/150' }}
+                source={imagenDePerfil} 
                 style={styles.profileImage}
               />
               <TouchableOpacity style={styles.profileEditButton}>

@@ -15,15 +15,17 @@ export const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   // --- VideoItem Styles (código existente...) ---
-  itemContainer: {
-    width,
-    height,
-    position: 'relative',
-  },
-  video: { 
-    width,
-    height,
-  },
+itemContainer: {
+  // NO uses fixed height aqui
+  flex: 1,
+  backgroundColor: '#000',
+  overflow: 'hidden',
+},
+video: {
+  // no uses height fijo
+  width: '100%',
+  height: '100%',
+},
   playButtonContainer: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'center',

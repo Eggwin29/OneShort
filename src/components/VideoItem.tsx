@@ -14,21 +14,24 @@ import { styles } from '../styles/styles';
 import { VideoItemProps } from '../constants/interfaces';
 import InteractionButton from './InteractionButton';
 
-/**
- * Componente que muestra un video con su información de usuario, descripción y botones de interacción.
- */
 const VideoItem: React.FC<VideoItemProps> = React.memo(({ uri, content, isActive }) => {
   const videoRef = useRef<Video>(null);
   const [paused, setPaused] = useState(false);
 
+  /** Tocar para pausar/reanudar */
   const handleVideoPress = useCallback(() => {
     setPaused(prev => !prev);
   }, []);
 
+  /**
+   * Maneja la reproducción cuando:
+   * - el usuario cambia de pestaña
+   * - el usuario hace scroll
+   * - el usuario pausa manualmente
+   */
   useEffect(() => {
     if (!videoRef.current) return;
-    
-    // Controlar la reproducción basado en si el item está visible (isActive) y si el usuario lo pausó
+
     if (isActive && !paused) {
       videoRef.current.playAsync();
     } else {
@@ -36,11 +39,26 @@ const VideoItem: React.FC<VideoItemProps> = React.memo(({ uri, content, isActive
     }
   }, [isActive, paused]);
 
+  /**
+   * Limpieza al desmontar:
+   * - Evita fugas de memoria
+   * - Detiene completamente el video cuando el item sale del árbol
+   */
+  useEffect(() => {
+    return () => {
+      videoRef.current?.stopAsync();
+    };
+  }, []);
+
   return (
-    <TouchableOpacity style={styles.itemContainer} onPress={handleVideoPress} activeOpacity={1}>
+    <TouchableOpacity
+      style={styles.itemContainer}
+      onPress={handleVideoPress}
+      activeOpacity={1}
+    >
       <Video
         ref={videoRef}
-        style={styles.video}
+        style={[styles.video, { width: '100%', height: '100%' }]}
         source={uri}
         resizeMode={ResizeMode.COVER}
         isLooping
@@ -49,45 +67,36 @@ const VideoItem: React.FC<VideoItemProps> = React.memo(({ uri, content, isActive
         useNativeControls={false}
       />
 
+      {/* Icono de play cuando está en pausa */}
       {paused && (
         <View style={styles.playButtonContainer}>
           <Ionicons name="play" size={80} color="rgba(255, 255, 255, 0.6)" />
         </View>
       )}
 
+      {/* Gradiente inferior */}
       <LinearGradient
         colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.6)']}
         style={styles.gradient}
       />
 
-      {/* Contenedor de Interacción (Derecha) */}
+      {/* Botones y avatar (lado derecho) */}
       <View style={styles.interactionContainer}>
-        <InteractionButton
-          iconName="heart"
-          count={content.likes}
-          iconType="Ionicons"
-        />
-        <InteractionButton
-          iconName="message-square"
-          count={content.comments}
-          iconType="Feather"
-        />
-        <InteractionButton
-          iconName="share"
-          count="Compartir"
-          iconType="Feather"
-        />
-        {/* Icono de Música (Rotatorio en tu código original) */}
+        <InteractionButton iconName="heart" count={content.likes} iconType="Ionicons" />
+        <InteractionButton iconName="message-square" count={content.comments} iconType="Feather" />
+        <InteractionButton iconName="share" count="Compartir" iconType="Feather" />
+
         <Image
           source={require('../../assets/images/logo.png')}
           style={styles.musicIcon}
         />
       </View>
 
-      {/* Información del Contenido (Izquierda/Abajo) */}
+      {/* Usuario + descripción + música */}
       <View style={styles.contentInfo}>
         <Text style={styles.username}>{content.username}</Text>
         <Text style={styles.description}>{content.description}</Text>
+
         <View style={styles.musicRow}>
           <FontAwesome5 name="music" size={12} color="white" />
           <Text style={styles.musicText}>Música Original</Text>
