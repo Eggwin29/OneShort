@@ -34,29 +34,34 @@ export default function App() {
       </SafeAreaProvider>
     );
   }
-
   return (
-  <SafeAreaProvider>
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!isAuthenticated ? (
-          <Stack.Screen
-            name="Auth"
-            children={(props) => (
-              <AuthScreen
-                {...props}
-                onAuthSuccess={() => setIsAuthenticated(true)}
-              />
-            )}
-          />
-        ) : (
-          <Stack.Screen name="Main" component={BottomTabNavigator} />
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
-
-    <StatusBar style="light" />
-  </SafeAreaProvider>
-);
-
+    <SafeAreaProvider>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          {!isAuthenticated ? (
+            <Stack.Screen
+              name="Auth"
+              children={(props) => (
+                <AuthScreen
+                  {...props}
+                  onAuthSuccess={() => setIsAuthenticated(true)}
+                />
+              )}
+            />
+          ) : (
+            <Stack.Screen name="Main">
+              {() => (
+                <BottomTabNavigator 
+                  onLogout={() => setIsAuthenticated(false)} // ← AQUÍ
+                />
+              )}
+            </Stack.Screen>
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+      <StatusBar style="light" />
+    </SafeAreaProvider>
+  );
 }
+
+

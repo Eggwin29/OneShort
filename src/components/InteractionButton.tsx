@@ -55,11 +55,24 @@ const InteractionButton: React.FC<InteractionButtonProps> = React.memo(({
   // Determinar el color del icono
   const iconColor = iconName === 'heart' && isLiked ? '#FF3040' : 'white';
 
+  // Función para formatear números (K, M)
+  const formatLikeCount = (num: number | string): string => {
+    if (typeof num === 'number') {
+      if (num >= 1000000) {
+        return (num / 1000000).toFixed(1) + 'M';
+      } else if (num >= 1000) {
+        return (num / 1000).toFixed(1) + 'K';
+      }
+      return num.toString();
+    }
+    return num; // Si ya es string, devolverlo tal cual
+  };
+
   if (loading && iconName === 'heart') {
     return (
       <TouchableOpacity style={styles.interactionButton} disabled>
         <ActivityIndicator size="small" color="white" />
-        <Text style={styles.interactionCount}>{count}</Text>
+        <Text style={styles.interactionCount}>{formatLikeCount(count)}</Text>
       </TouchableOpacity>
     );
   }
@@ -79,7 +92,7 @@ const InteractionButton: React.FC<InteractionButtonProps> = React.memo(({
           color={iconColor}
         />
       )}
-      <Text style={styles.interactionCount}>{count}</Text>
+      <Text style={styles.interactionCount}>{formatLikeCount(count)}</Text>
     </TouchableOpacity>
   );
 });

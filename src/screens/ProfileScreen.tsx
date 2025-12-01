@@ -11,10 +11,11 @@ import {
   Dimensions,
   Modal,
   ActivityIndicator,
+  Alert,
 } from "react-native";
-import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
+import { Ionicons, Feather, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { styles } from "../styles/styles";
-import { getCurrentUser } from "../services/firebaseService";
+import { getCurrentUser, logoutUser } from "../services/firebaseService";
 import { imageList } from "../constants/data";
 import { saveProfileImage, getProfileImage } from "../services/userProfileService";
 import { getCurrentUserLikedVideos } from "../services/userLikesService";
@@ -23,6 +24,7 @@ const { width } = Dimensions.get("window");
 
 interface ProfileScreenProps {
   onBackToFeed: () => void;
+  onLogout?: () => void; // Nueva prop para manejar logout
 }
 
 interface VideoItem {
@@ -32,10 +34,11 @@ interface VideoItem {
   title?: string;
 }
 
-const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
+const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed, onLogout }) => {
   const [activeTab, setActiveTab] = useState<"videos" | "likes">("videos");
   const [selectedProfileImage, setSelectedProfileImage] = useState(imageList[0].path);
   const [showModal, setShowModal] = useState(false);
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false); // Nuevo estado para menú
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState({
     username: "Cargando...",
@@ -49,46 +52,58 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
   const [userVideos, setUserVideos] = useState<VideoItem[]>([
     {
       id: "video_1",
-      thumbnail: require("../../assets/images/thumbnails/thumbnail1.jpg"),
+      thumbnail: require("../../assets/images/PorfilePics/lebron-profile.png"),
       likes: 850000,
       title: "Levi limpiando todo a su paso"
     },
     {
       id: "video_2",
-      thumbnail: require("../../assets/images/thumbnails/thumbnail2.jpg"),
+      thumbnail: require("../../assets/images/PorfilePics/bochi-profile.png"),
       likes: 1200000,
       title: "Luffy Gear 5"
     },
     {
       id: "video_3",
-      thumbnail: require("../../assets/images/thumbnails/thumbnail3.jpg"),
+      thumbnail: require("../../assets/images/PorfilePics/frieren-profile.png"),
       likes: 720000,
       title: "Tanjiro vs Rui"
     },
     {
       id: "video_4",
-      thumbnail: require("../../assets/images/thumbnails/thumbnail4.jpg"),
+      thumbnail: require("../../assets/images/PorfilePics/madeline-profile.png"),
       likes: 980000,
       title: "Goatjo regresa"
     },
     {
       id: "video_5",
-      thumbnail: require("../../assets/images/thumbnails/thumbnail5.jpg"),
+      thumbnail: require("../../assets/images/PorfilePics/ricardo-profile.png"),
       likes: 610000,
       title: "Chainsaw Man"
     },
     {
       id: "video_6",
-      thumbnail: require("../../assets/images/thumbnails/thumbnail6.jpg"),
+      thumbnail: require("../../assets/images/PorfilePics/rock-profile.png"),
       likes: 550000,
       title: "Spy x Family"
-    }, 
+    },
     {
       id: "video_7",
-      thumbnail: require("../../assets/images/thumbnails/thumbnail7.jpg"),
+      thumbnail: require("../../assets/images/logo.png"),
       likes: 430000,
       title: "Blue Lock"
-    }
+    },
+    {
+      id: "video_8",
+      thumbnail: require("../../assets/images/PorfilePics/lebron-profile.png"),
+      likes: 320000,
+      title: "Attack on Titan"
+    },
+    {
+      id: "video_9",
+      thumbnail: require("../../assets/images/PorfilePics/bochi-profile.png"),
+      likes: 890000,
+      title: "One Piece"
+    },
   ]);
 
   const [likedVideos, setLikedVideos] = useState<VideoItem[]>([]);
@@ -134,7 +149,6 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
       if (currentUser) {
         const likedVideoIds = await getCurrentUserLikedVideos();
         
-        // Mapa de video IDs a títulos (basado en tu OVERLAY_DATA)
         const videoTitles: Record<string, string> = {
           'video_1': 'Levi limpiando todo a su paso',
           'video_2': 'Luffy usando el Gear 5',
@@ -145,18 +159,16 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
           'video_7': 'Isagi decidiendo el partido',
         };
         
-        // Mapa de video IDs a thumbnails
         const videoThumbnails: Record<string, any> = {
-          'video_1': require("../../assets/images/thumbnails/thumbnail1.jpg"),
-          'video_2': require("../../assets/images/thumbnails/thumbnail2.jpg"),
-          'video_3': require("../../assets/images/thumbnails/thumbnail3.jpg"),
-          'video_4': require("../../assets/images/thumbnails/thumbnail4.jpg"),
-          'video_5': require("../../assets/images/thumbnails/thumbnail5.jpg"),
-          'video_6': require("../../assets/images/thumbnails/thumbnail6.jpg"),
-          'video_7': require("../../assets/images/thumbnails/thumbnail7.jpg"),
+          'video_1': require("../../assets/images/PorfilePics/lebron-profile.png"),
+          'video_2': require("../../assets/images/PorfilePics/bochi-profile.png"),
+          'video_3': require("../../assets/images/PorfilePics/frieren-profile.png"),
+          'video_4': require("../../assets/images/PorfilePics/madeline-profile.png"),
+          'video_5': require("../../assets/images/PorfilePics/ricardo-profile.png"),
+          'video_6': require("../../assets/images/PorfilePics/rock-profile.png"),
+          'video_7': require("../../assets/images/logo.png"),
         };
         
-        // Convertir IDs a objetos de video con información
         const videosData: VideoItem[] = likedVideoIds.map(videoId => {
           const thumbnail = videoThumbnails[videoId] || require("../../assets/images/logo.png");
           const title = videoTitles[videoId] || 'Video gustado';
@@ -164,7 +176,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
           return {
             id: videoId,
             thumbnail: thumbnail,
-            likes: Math.floor(Math.random() * 15000), // Número aleatorio temporal
+            likes: Math.floor(Math.random() * 15000),
             title: title
           };
         });
@@ -182,6 +194,35 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
     setSelectedProfileImage(item.path);
     setShowModal(false);
     await saveProfileImage(item.id);
+  };
+
+  const handleLogout = async () => {
+    Alert.alert(
+      "Cerrar sesión",
+      "¿Estás seguro que quieres cerrar sesión?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        {
+          text: "Cerrar sesión",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await logoutUser();
+              if (onLogout) {
+                onLogout(); // Llama a la función de logout del padre
+              }
+              // Cierra el menú de settings
+              setShowSettingsMenu(false);
+            } catch (error: any) {
+              Alert.alert("Error", "No se pudo cerrar sesión: " + error.message);
+            }
+          }
+        }
+      ]
+    );
   };
 
   const renderVideoItem = ({ item }: { item: VideoItem }) => (
@@ -245,10 +286,47 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
           <Ionicons name="arrow-back" size={24} color="white" />
         </TouchableOpacity>
         <Text style={styles.profileHeaderTitle}>Perfil</Text>
-        <TouchableOpacity style={styles.profileSettingsButton}>
+        <TouchableOpacity 
+          style={styles.profileSettingsButton}
+          onPress={() => setShowSettingsMenu(!showSettingsMenu)}
+        >
           <Ionicons name="settings-outline" size={24} color="white" />
         </TouchableOpacity>
       </View>
+
+      {/* MENÚ DE SETTINGS (aparece cuando se presiona el botón) */}
+      {showSettingsMenu && (
+        <View style={styles.settingsMenu}>
+          <TouchableOpacity 
+            style={styles.settingsMenuItem}
+            onPress={handleLogout}
+          >
+            <MaterialCommunityIcons name="logout" size={22} color="#FF3040" />
+            <Text style={styles.settingsMenuText}>Cerrar sesión</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.settingsMenuItem}
+            onPress={() => {
+              setShowSettingsMenu(false);
+              setShowModal(true);
+            }}
+          >
+            <Feather name="edit-2" size={20} color="white" />
+            <Text style={styles.settingsMenuText}>Cambiar foto de perfil</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.settingsMenuItem}
+            onPress={() => setShowSettingsMenu(false)}
+          >
+            <Ionicons name="close" size={22} color="rgba(255,255,255,0.5)" />
+            <Text style={[styles.settingsMenuText, { color: 'rgba(255,255,255,0.5)' }]}>
+              Cerrar menú
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       <ScrollView style={styles.profileScrollView}>
         <View style={styles.profileInfoSection}>
@@ -358,7 +436,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
         {renderContent()}
       </ScrollView>
 
-      {/* MODAL */}
+      {/* MODAL DE FOTOS DE PERFIL */}
       <Modal visible={showModal} transparent animationType="fade">
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>

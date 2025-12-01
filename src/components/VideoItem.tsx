@@ -1,4 +1,4 @@
-// src/components/VideoItem.tsx
+// src/components/VideoItem.tsx (versión mejorada)
 
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import {
@@ -14,13 +14,36 @@ import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import { styles } from '../styles/styles';
 import { VideoItemProps } from '../constants/interfaces';
 import InteractionButton from './InteractionButton';
-import { toggleLikeForCurrentUser } from '../services/userLikesService';
+import { toggleLikeForCurrentUser, getVideoLikeCount } from '../services/userLikesService';
 
 const VideoItem: React.FC<VideoItemProps> = React.memo(({ uri, content, isActive }) => {
   const videoRef = useRef<Video>(null);
   const [paused, setPaused] = useState(false);
   const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(parseInt(content.likes.replace('K', '000').replace('M', '000000')) || 0);
+  const [likeCount, setLikeCount] = useState(0); // ← INICIAR EN 0
+  const [loadingLikes, setLoadingLikes] = useState(true);
+
+  // CARGAR LIKES REALES DESDE FIREBASE AL INICIAR
+  useEffect(() => {
+    const loadInitialLikes = async () => {
+      if (content.id) {
+        setLoadingLikes(true);
+        try {
+          const realLikeCount = await getVideoLikeCount(content.id);
+          setLikeCount(realLikeCount);
+        } catch (error) {
+          console.error('Error loading initial likes:', error);
+          // Si hay error, usar el valor de data.ts (convertido a número)
+          const initialLikes = parseInt(content.likes.replace('K', '000').replace('M', '000000')) || 0;
+          setLikeCount(initialLikes);
+        } finally {
+          setLoadingLikes(false);
+        }
+      }
+    };
+
+    loadInitialLikes();
+  }, [content.id, content.likes]);
 
   /** Tocar para pausar/reanudar */
   const handleVideoPress = useCallback(() => {
@@ -36,12 +59,11 @@ const VideoItem: React.FC<VideoItemProps> = React.memo(({ uri, content, isActive
     try {
       const newLikeStatus = await toggleLikeForCurrentUser(content.id);
       setLiked(newLikeStatus);
-      // Actualizar el contador visualmente
-      if (newLikeStatus) {
-        setLikeCount(prev => prev + 1);
-      } else {
-        setLikeCount(prev => Math.max(0, prev - 1));
-      }
+      
+      // Actualizar el contador basado en Firebase
+      const updatedLikeCount = await getVideoLikeCount(content.id);
+      setLikeCount(updatedLikeCount);
+      
     } catch (error: any) {
       console.error('Error al dar like:', error);
       if (error.message === 'Usuario no autenticado') {

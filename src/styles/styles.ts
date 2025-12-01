@@ -557,5 +557,39 @@ likeCountText: {
   fontWeight: 'bold',
 },
 
+// Agrega al final de src/styles/styles.ts
+
+// --- SETTINGS MENU STYLES ---
+settingsMenu: {
+  position: 'absolute',
+  top: 60, // Debajo del header
+  right: 15,
+  backgroundColor: '#222',
+  borderRadius: 12,
+  paddingVertical: 8,
+  paddingHorizontal: 0,
+  minWidth: 200,
+  zIndex: 1000,
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.3,
+  shadowRadius: 10,
+  elevation: 10,
+  borderWidth: 1,
+  borderColor: 'rgba(255,255,255,0.1)',
+},
+settingsMenuItem: {
+  flexDirection: 'row',
+  alignItems: 'center',
+  paddingVertical: 12,
+  paddingHorizontal: 16,
+  gap: 12,
+},
+settingsMenuText: {
+  color: 'white',
+  fontSize: 16,
+  fontWeight: '500',
+},
+
 });
 

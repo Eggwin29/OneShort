@@ -8,7 +8,11 @@ import { Platform } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 
-export default function BottomTabNavigator() {
+interface BottomTabNavigatorProps {
+  onLogout?: () => void; // Nueva prop para manejar logout
+}
+
+export default function BottomTabNavigator({ onLogout }: BottomTabNavigatorProps) {
   const TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 80 : 60;
 
   return (
@@ -28,43 +32,35 @@ export default function BottomTabNavigator() {
     >
       <Tab.Screen
         name="Feed"
-        component={FeedScreenWrapper}
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons name="home" size={24} color={focused ? '#fff' : '#777'} />
           ),
         }}
-      />
+      >
+        {({ navigation }) => (
+          <FeedScreen
+            onNavigateToProfile={() => navigation.navigate('Profile')}
+            onNavigateToFeed={() => navigation.navigate('Feed')}
+          />
+        )}
+      </Tab.Screen>
+      
       <Tab.Screen
         name="Profile"
-        component={ProfileScreenWrapper}
         options={{
           tabBarIcon: ({ focused }) => (
             <Ionicons name="person" size={24} color={focused ? '#fff' : '#777'} />
           ),
         }}
-      />
+      >
+        {({ navigation }) => (
+          <ProfileScreen
+            onBackToFeed={() => navigation.navigate('Feed')}
+            onLogout={onLogout} // Pasa la función de logout al ProfileScreen
+          />
+        )}
+      </Tab.Screen>
     </Tab.Navigator>
-  );
-}
-
-/**
- * Wrappers para inyectar navigation props tipo callbacks sin modificar
- * demasiado tus pantallas actuales.
- */
-function FeedScreenWrapper({ navigation }: any) {
-  return (
-    <FeedScreen
-      onNavigateToProfile={() => navigation.navigate('Profile')}
-      onNavigateToFeed={() => navigation.navigate('Feed')}
-    />
-  );
-}
-
-function ProfileScreenWrapper({ navigation }: any) {
-  return (
-    <ProfileScreen
-      onBackToFeed={() => navigation.navigate('Feed')}
-    />
   );
 }
