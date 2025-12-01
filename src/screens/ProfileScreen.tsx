@@ -1,5 +1,6 @@
 // src/screens/ProfileScreen.tsx
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,39 +9,37 @@ import {
   ScrollView,
   FlatList,
   Dimensions,
-  Alert,
-} from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import { Ionicons, Feather, MaterialIcons } from '@expo/vector-icons';
-import { styles } from '../styles/styles';
-import { getCurrentUser } from '../services/firebaseService';
-import { imageList } from '../constants/data';
+  Modal,
+} from "react-native";
+import { Ionicons, Feather, MaterialIcons } from "@expo/vector-icons";
+import { styles } from "../styles/styles";
+import { getCurrentUser } from "../services/firebaseService";
+import { imageList } from "../constants/data";
+import { saveProfileImage, getProfileImage } from "../services/userProfileService";
 
-const { width } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 interface ProfileScreenProps {
   onBackToFeed: () => void;
 }
 
-const defaultProfileImage = imageList[0].path;
-
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
-  const [activeTab, setActiveTab] = useState<'videos' | 'likes'>('videos');
-
-  // Imagen seleccionada por el usuario
-  const [profileImage, setProfileImage] = useState<any>(defaultProfileImage);
+  const [activeTab, setActiveTab] = useState<"videos" | "likes">("videos");
+  const [selectedProfileImage, setSelectedProfileImage] = useState(imageList[0].path);
+  const [showModal, setShowModal] = useState(false);
 
   const [userData, setUserData] = useState({
-    username: 'Cargando...',
-    email: '',
-    followers: '0',
-    following: '0',
-    likes: '0',
-    bio: '✨ Cargando información... ✨',
+    username: "Cargando...",
+    email: "",
+    followers: "0",
+    following: "0",
+    likes: "0",
+    bio: "✨ Cargando información... ✨",
   });
 
   useEffect(() => {
     loadUserData();
+    loadSavedProfileImage();
   }, []);
 
   const loadUserData = () => {
@@ -49,66 +48,41 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
     if (currentUser) {
       const username =
         currentUser.displayName ||
-        currentUser.email?.split('@')[0] ||
-        'Usuario';
+        currentUser.email?.split("@")[0] ||
+        "Usuario";
 
-      const email = currentUser.email || '';
+      const email = currentUser.email || "";
 
       setUserData({
         username,
         email,
-        followers: '1.2K',
-        following: '245',
-        likes: '45.6K',
-        bio: email
-          ? `✨ ${username} compartiendo contenido increíble ✨`
-          : '✨ Creando contenido increíble ✨',
-      });
-    } else {
-      setUserData({
-        username: 'Invitado',
-        email: '',
-        followers: '0',
-        following: '0',
-        likes: '0',
-        bio: '✨ Inicia sesión para ver tu perfil ✨',
+        followers: "1.2K",
+        following: "245",
+        likes: "45.6K",
+        bio: `✨ ${username} compartiendo contenido increíble ✨`,
       });
     }
   };
 
-  // ------------------------------
-  //       CAMBIAR FOTO PERFIL
-  // ------------------------------
-  const pickProfileImage = async () => {
-    try {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permiso requerido',
-          'Necesitas otorgar acceso a tu galería.'
-        );
-        return;
-      }
+  // Cargar foto desde Firebase
+  const loadSavedProfileImage = async () => {
+    const savedId = await getProfileImage();
 
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1], // cuadrado estilo TikTok
-        quality: 0.9,
-      });
+    if (!savedId) return;
 
-      if (!result.canceled) {
-        setProfileImage({ uri: result.assets[0].uri });
-      }
-    } catch (error) {
-      console.log('Error al seleccionar imagen:', error);
-    }
+    const found = imageList.find((img) => img.id === savedId);
+    if (found) setSelectedProfileImage(found.path);
   };
 
-  // ------------------------------
-  //         VIDEOS EJEMPLO
-  // ------------------------------
+  // Guardar selección
+  const handleSelectImage = async (item: any) => {
+    setSelectedProfileImage(item.path);
+    setShowModal(false);
+
+    await saveProfileImage(item.id);
+  };
+
+  // Dummy videos
   const userVideos = Array.from({ length: 12 }, (_, i) => ({
     id: i.toString(),
     thumbnail: `https://picsum.photos/seed/${i + 100}/200/300`,
@@ -121,7 +95,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
     likes: Math.floor(Math.random() * 15000),
   }));
 
-  const renderVideoItem = ({ item }: any) => (
+  const renderVideoItem = ({ item }: { item: any }) => (
     <TouchableOpacity style={styles.profileVideoItem}>
       <Image source={{ uri: item.thumbnail }} style={styles.profileVideoThumbnail} />
       <View style={styles.profileVideoOverlay}>
@@ -133,7 +107,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
 
   return (
     <View style={styles.profileContainer}>
-      {/* Header */}
+      {/* HEADER */}
       <View style={styles.profileHeader}>
         <TouchableOpacity onPress={onBackToFeed}>
           <Ionicons name="arrow-back" size={24} color="white" />
@@ -144,25 +118,22 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.profileScrollView} showsVerticalScrollIndicator={false}>
-        
-        {/* Información del usuario */}
+      <ScrollView style={styles.profileScrollView}>
         <View style={styles.profileInfoSection}>
-          
-          {/* Foto y estadísticas */}
           <View style={styles.profileTopSection}>
+            {/* FOTO DE PERFIL */}
             <View style={styles.profileImageContainer}>
-              <Image source={profileImage} style={styles.profileImage} />
+              <Image source={selectedProfileImage} style={styles.profileImage} />
 
-              {/* Botón cambiar foto */}
               <TouchableOpacity
                 style={styles.profileEditButton}
-                onPress={pickProfileImage}
+                onPress={() => setShowModal(true)}
               >
                 <Feather name="edit-2" size={14} color="white" />
               </TouchableOpacity>
             </View>
 
+            {/* STATS */}
             <View style={styles.profileStats}>
               <View style={styles.profileStat}>
                 <Text style={styles.profileStatNumber}>12</Text>
@@ -179,16 +150,14 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
             </View>
           </View>
 
-          {/* Nombre y bio */}
+          {/* BIO */}
           <View style={styles.profileBioSection}>
             <Text style={styles.profileUsername}>@{userData.username}</Text>
-            {userData.email ? (
-              <Text style={styles.profileEmail}>{userData.email}</Text>
-            ) : null}
+            <Text style={styles.profileEmail}>{userData.email}</Text>
             <Text style={styles.profileBio}>{userData.bio}</Text>
           </View>
 
-          {/* Botones */}
+          {/* BOTONES */}
           <View style={styles.profileActions}>
             <TouchableOpacity style={styles.profileEditProfileButton}>
               <Text style={styles.profileEditProfileText}>Editar perfil</Text>
@@ -200,21 +169,24 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
           </View>
         </View>
 
-        {/* Tabs */}
+        {/* TABS */}
         <View style={styles.profileTabs}>
           <TouchableOpacity
-            style={[styles.profileTab, activeTab === 'videos' && styles.profileTabActive]}
-            onPress={() => setActiveTab('videos')}
+            style={[
+              styles.profileTab,
+              activeTab === "videos" && styles.profileTabActive,
+            ]}
+            onPress={() => setActiveTab("videos")}
           >
             <MaterialIcons
               name="video-library"
               size={24}
-              color={activeTab === 'videos' ? '#ffc95e' : 'rgba(255,255,255,0.5)'}
+              color={activeTab === "videos" ? "#ffc95e" : "rgba(255,255,255,0.5)"}
             />
             <Text
               style={[
                 styles.profileTabText,
-                activeTab === 'videos' && styles.profileTabTextActive,
+                activeTab === "videos" && styles.profileTabTextActive,
               ]}
             >
               Videos
@@ -222,18 +194,21 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.profileTab, activeTab === 'likes' && styles.profileTabActive]}
-            onPress={() => setActiveTab('likes')}
+            style={[
+              styles.profileTab,
+              activeTab === "likes" && styles.profileTabActive,
+            ]}
+            onPress={() => setActiveTab("likes")}
           >
             <Ionicons
               name="heart"
               size={24}
-              color={activeTab === 'likes' ? '#ffc95e' : 'rgba(255,255,255,0.5)'}
+              color={activeTab === "likes" ? "#ffc95e" : "rgba(255,255,255,0.5)"}
             />
             <Text
               style={[
                 styles.profileTabText,
-                activeTab === 'likes' && styles.profileTabTextActive,
+                activeTab === "likes" && styles.profileTabTextActive,
               ]}
             >
               Gustados
@@ -241,10 +216,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Grid de videos */}
         <View style={styles.profileVideosGrid}>
           <FlatList
-            data={activeTab === 'videos' ? userVideos : likedVideos}
+            data={activeTab === "videos" ? userVideos : likedVideos}
             renderItem={renderVideoItem}
             keyExtractor={(item) => item.id}
             numColumns={3}
@@ -252,6 +226,42 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed }) => {
           />
         </View>
       </ScrollView>
+
+      {/* ------------------ MODAL ------------------ */}
+      {/* ------------------ MODAL ------------------ */}
+<Modal visible={showModal} transparent animationType="fade">
+  <View style={styles.modalOverlay}>
+    <View style={styles.modalContainer}>
+      <Text style={styles.modalTitle}>Selecciona tu foto</Text>
+
+      <FlatList
+        data={imageList}
+        numColumns={3}
+        keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }}
+        style={{ maxHeight: 300 }}   // 👈 LIMITE PARA PERMITIR SCROLL
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.modalImageWrapper}
+            onPress={() => handleSelectImage(item)}
+          >
+            <Image source={item.path} style={styles.modalImage} />
+          </TouchableOpacity>
+        )}
+      />
+
+      <TouchableOpacity
+        onPress={() => setShowModal(false)}
+        style={styles.modalCloseButton}
+      >
+        <Text style={styles.modalCloseText}>Cancelar</Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+</Modal>
+
+
     </View>
   );
 };

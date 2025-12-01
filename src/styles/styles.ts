@@ -466,5 +466,59 @@ profileEmail: {
   fontSize: 12,
   marginBottom: 8,
 },
+
+// --------------------- MODAL STYLES ---------------------
+modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0,0,0,0.6)',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+
+modalContainer: {
+  width: 300,
+  backgroundColor: '#222',
+  borderRadius: 20,
+  padding: 20,
+  maxHeight: 450,          // 👈 MUY IMPORTANTE: LIMITA ALTURA TOTAL
+  alignItems: 'center',
+},
+
+modalTitle: {
+  fontSize: 18,
+  fontWeight: 'bold',
+  color: '#fff',
+  marginBottom: 15,
+},
+
+modalImageWrapper: {
+  margin: 6,
+  width: 70,
+  height: 70,
+  borderRadius: 10,
+  overflow: 'hidden',
+},
+
+modalImage: {
+  width: '100%',
+  height: '100%',
+  resizeMode: 'cover',
+},
+
+modalCloseButton: {
+  backgroundColor: '#ff4d4d',
+  paddingVertical: 10,
+  paddingHorizontal: 30,
+  borderRadius: 10,
+  marginTop: 15,
+},
+
+modalCloseText: {
+  color: '#fff',
+  fontSize: 16,
+  fontWeight: 'bold',
+},
+
+
 });
 
