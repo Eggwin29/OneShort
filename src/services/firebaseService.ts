@@ -8,7 +8,7 @@ import {
   UserCredential,
   onAuthStateChanged
 } from 'firebase/auth';
-import { getDatabase, ref, set } from 'firebase/database';
+import { getDatabase, ref, set, get, update } from 'firebase/database';
 import * as Crypto from 'expo-crypto';
 
 // Tu configuración de Firebase
@@ -49,28 +49,33 @@ export const encryptPassword = async (password: string): Promise<string> => {
 /**
  * Guarda los datos del usuario en Realtime Database
  */
+// src/services/firebaseService.ts
+
 export const saveUserToDatabase = async (
   userId: string,
   username: string,
   email: string,
-  encryptedPassword: string
+  encryptedPassword: string,
+  profilePicId: number = 1
 ): Promise<void> => {
   try {
     const userRef = ref(database, `users/${userId}`);
     
     await set(userRef, {
-      username: username,
-      email: email,
-      password: encryptedPassword, // Contraseña cifrada
+      username,
+      email,
+      password: encryptedPassword,
+      profilePicId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
-    
+
     console.log('Usuario guardado en Realtime Database');
   } catch (error: any) {
     throw new Error('Error al guardar usuario en la base de datos: ' + error.message);
   }
 };
+
 
 /**
  * Registra un nuevo usuario con email, contraseña y nombre de usuario
@@ -98,7 +103,8 @@ export const registerUser = async (
       userCredential.user.uid,
       username,
       email,
-      encryptedPassword
+      encryptedPassword,
+      1
     );
 
     return userCredential;
@@ -178,6 +184,35 @@ export const getUserFromDatabase = async (userId: string) => {
     throw new Error('Error al obtener usuario de la base de datos: ' + error.message);
   }
 };
+
+// Función nueva para actualizar foto de perfil
+export const updateUserProfilePic = async (userId: string, newPicId: number): Promise<void> => {
+  try {
+    const userRef = ref(database, `users/${userId}`);
+    await update(userRef, {
+      profilePicId: newPicId,
+      updatedAt: new Date().toISOString()
+    });
+    console.log("Foto de perfil actualizada");
+  } catch (error: any) {
+    throw new Error("Error al actualizar la foto de perfil: " + error.message);
+  }
+};
+
+// Funcion para obtener el usuario completo
+export const fetchUserData = async (userId: string) => {
+  try {
+    const userRef = ref(database, `users/${userId}`);
+    const snapshot = await get(userRef);
+
+    if (!snapshot.exists()) return null;
+
+    return snapshot.val();
+  } catch (error: any) {
+    throw new Error("Error al obtener datos del usuario: " + error.message);
+  }
+};
+
 
 /**
  * Cierra la sesión actual
