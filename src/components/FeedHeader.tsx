@@ -10,9 +10,6 @@ interface FeedHeaderProps {
   currentScreen?: 'feed' | 'profile';
 }
 
-/**
- * Componente de encabezado que incluye el logo y los botones "Tu perfil" y "Para Ti".
- */
 const FeedHeader: React.FC<FeedHeaderProps> = React.memo(({ 
   onLogoPress, 
   onNavigateToProfile, 

@@ -1,6 +1,4 @@
 // src/services/userLikesService.ts
-// Este archivo es nuevo, crea un archivo con este contenido
-
 import { 
   toggleLike as fbToggleLike,
   getUserLikedVideos as fbGetUserLikedVideos,

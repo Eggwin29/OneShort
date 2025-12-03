@@ -13,9 +13,6 @@ interface AuthScreenProps {
   onAuthSuccess: () => void;
 }
 
-/**
- * Pantalla de autenticación (Login/Registro) con un selector deslizable.
- */
 const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   const [mode, setMode] = useState<AuthMode>('Login');
   // Ajustamos el valor animado para el ancho del formContainer (width - 60)
@@ -23,7 +20,6 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
 
   // Animación para deslizar el contenedor de formularios
   useEffect(() => {
-    // Calculamos el ancho interno del formulario: width de la pantalla - padding izquierdo y derecho de authContainer (30 + 30 = 60)
     const formInternalWidth = width - 60;
     const toValue = mode === 'Login' ? 0 : -formInternalWidth; 
     
@@ -49,16 +45,12 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
         onAuthSuccess(); 
     }
   }, [mode, onAuthSuccess, handleModeChange]);
-  
-  // El ancho del contenedor de formularios es el ancho interno de la pantalla * 2
+
   const formContainerWidth = (width - 60) * 2; 
   const formInternalWidth = width - 60;
 
   return (
-    // Usamos LinearGradient aquí si quisiéramos un fondo sutil, pero mantendremos View por simplicidad de la refactorización
     <View style={styles.authContainer}>
-
-      {/* Título de la Aplicación con efecto 'Glow' */}
       <View style={styles.authTitleWrapper}>
         <Text style={styles.TitleText}>
           ONE{' '}
@@ -94,7 +86,7 @@ const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
           style={[
             styles.formContainer,
             { transform: [{ translateX: slideAnim }] },
-            { flexDirection: 'row', width: formContainerWidth } // Doble ancho
+            { flexDirection: 'row', width: formContainerWidth }
           ]}
         >
           {/* Formulario de Login (Izquierda) */}

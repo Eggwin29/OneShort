@@ -160,13 +160,13 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onBackToFeed, onLogout })
         };
         
         const videoThumbnails: Record<string, any> = {
-          'video_1': require("../../assets/images/PorfilePics/lebron-profile.png"),
-          'video_2': require("../../assets/images/PorfilePics/bochi-profile.png"),
-          'video_3': require("../../assets/images/PorfilePics/frieren-profile.png"),
-          'video_4': require("../../assets/images/PorfilePics/madeline-profile.png"),
-          'video_5': require("../../assets/images/PorfilePics/ricardo-profile.png"),
-          'video_6': require("../../assets/images/PorfilePics/rock-profile.png"),
-          'video_7': require("../../assets/images/logo.png"),
+          'video_1': require("../../assets/images/thumbnails/thumbnail1.jpg"),
+          'video_2': require("../../assets/images/thumbnails/thumbnail1.jpg"),
+          'video_3': require("../../assets/images/thumbnails/thumbnail1.jpg"),
+          'video_4': require("../../assets/images/thumbnails/thumbnail1.jpg"),
+          'video_5': require("../../assets/images/thumbnails/thumbnail1.jpg"),
+          'video_6': require("../../assets/images/thumbnails/thumbnail1.jpg"),
+          'video_7': require("../../assets/images/thumbnails/thumbnail1.jpg"),
         };
         
         const videosData: VideoItem[] = likedVideoIds.map(videoId => {

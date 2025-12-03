@@ -25,10 +25,8 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
 // Initialize Firebase Authentication
 export const auth = getAuth(app);
-
 // Initialize Firebase Realtime Database
 export const database = getDatabase(app);
 

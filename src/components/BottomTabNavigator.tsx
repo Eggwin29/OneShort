@@ -5,13 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import FeedScreen from '../screens/FeedScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import { Platform } from 'react-native';
-
 const Tab = createBottomTabNavigator();
-
 interface BottomTabNavigatorProps {
   onLogout?: () => void; // Nueva prop para manejar logout
 }
-
 export default function BottomTabNavigator({ onLogout }: BottomTabNavigatorProps) {
   const TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 80 : 60;
 

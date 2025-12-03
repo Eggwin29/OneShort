@@ -52,7 +52,7 @@ export default function App() {
             <Stack.Screen name="Main">
               {() => (
                 <BottomTabNavigator 
-                  onLogout={() => setIsAuthenticated(false)} // ← AQUÍ
+                  onLogout={() => setIsAuthenticated(false)}
                 />
               )}
             </Stack.Screen>
